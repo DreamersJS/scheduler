@@ -56,6 +56,32 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
         />
       </div>
 
+      {/* starting hour */}
+      <div>
+        <label htmlFor="startTime">Start Time:</label>
+        <input
+          type="time"
+          id="startTime"
+          name="startTime"
+          value={event.startTime}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      {/* ending hour */}
+      <div>
+        <label htmlFor="endTime">End Time:</label>
+        <input
+          type="time"
+          id="endTime"
+          name="endTime"
+          value={event.endTime}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
       <div>
         <label htmlFor="eventType">Event Type:</label>
         <select

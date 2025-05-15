@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import EventForm from "./EventForm";
-import Header from './Header';
 
 const generateTimeSlots = (viewMode) => {
   const slots = [];
@@ -14,27 +13,20 @@ const generateTimeSlots = (viewMode) => {
   return slots;
 };
 
-const ScheduleGrid = ({ viewMode }) => {
+const ScheduleGrid = ({ viewMode, day }) => {
   const timeSlots = generateTimeSlots(viewMode);
-  const [events, setEvents] = useState([]);  // Store events with unique ID
+  const [events, setEvents] = useState([]);
   const [edit, setEdit] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  const today = new Date();
-  const startOfWeek = today.getDate() - today.getDay();
-  const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today.setDate(startOfWeek + i));
-    return date;
-  });
-
-  const handleEdit = (day, slot) => {
+  const handleEdit = (slot) => {
     setSelectedSlot({ day, slot });
     setEdit(!edit);
   };
 
   const handleSaveEvent = (event) => {
-    const newEvent = { ...event, id: Date.now() };  // Create a unique event ID
-    setEvents([...events, newEvent]); // Add event to the list
+    const newEvent = { ...event, id: Date.now() };
+    setEvents([...events, newEvent]);
   };
 
   const handleChangeColor = (eventId, color) => {
@@ -44,39 +36,33 @@ const ScheduleGrid = ({ viewMode }) => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-2 p-4">
-        {daysOfWeek.map((day, dayIndex) => (
-          <div key={dayIndex} className="flex flex-col">
-            <div className="text-center font-semibold">{day.toLocaleDateString()}</div>
-            {timeSlots.map((slot, index) => {
-              const event = events.find(e => e.day === day && e.slot === slot);
-              return (
-                <div
-                  key={index}
-                  className="p-2 border rounded bg-white text-center"
-                  onClick={(e) => {
-                    e.stopPropagation();  // Prevent event bubbling
-                    handleEdit(day, slot);
-                  }}
-                  style={{ backgroundColor: event ? event.color : 'white' }}  // Background color
-                >
-                  {edit && selectedSlot?.day === day && selectedSlot?.slot === slot && (
-                    <EventForm 
-                      selectedDate={day}
-                      selectedSlot={slot}
-                      handleSaveEvent={handleSaveEvent}
-                      handleChangeColor={handleChangeColor}
-                      existingEvent={event}
-                    />
-                  )}
-                  <div>{slot}</div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+    <div className="p-2 bg-white w-full md:w-1/7">
+      <h2 className="text-center">
+        {day.toLocaleDateString()} ({day.toLocaleString('en-US', { weekday: 'long' })})
+      </h2>
+      <div className="mt-2">
+        {timeSlots.map((slot, index) => {
+          const event = events.find(e => e.day.getTime() === day.getTime() && e.slot === slot);
+          return (
+            <div
+              key={index}
+              className="p-2 text-center cursor-pointer"
+              onClick={() => handleEdit(slot)}
+              style={{ backgroundColor: event ? event.color : 'white' }}
+            >
+              {edit && selectedSlot?.slot === slot && (
+                <EventForm 
+                  selectedDate={day}
+                  selectedSlot={slot}
+                  handleSaveEvent={handleSaveEvent}
+                  handleChangeColor={handleChangeColor}
+                  existingEvent={event}
+                />
+              )}
+              {slot}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
