@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './App.css';
 import ToggleView from "./components/ToggleView";
 import ScheduleGrid from "./components/ScheduleGrid";
-import { Grid, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
+import { Grid } from '@mui/system';
 
 function App() {
   const [viewMode, setViewMode] = useState("12H");
@@ -15,18 +16,12 @@ function App() {
 
   return (
     <div className="min-h-screen p-4">
-      {/* <h1 className="text-2xl font-bold text-center mb-4">Schedule App</h1> */}
       <ToggleView viewMode={viewMode} setViewMode={setViewMode} />
 
-      <div className="grid grid-cols-1 md:grid-rows-7 gap-4 p-4 m-2">
+      <div className="w-full" >
       <Grid container columns={7} spacing={2}>
         {daysOfWeek.map((day, index) => (
-
-          <Grid 
-          day={day} 
-          key={index} 
-          xs={1}
-        >
+          <Grid key={index} columnSpan={{ xs: 7, sm: 1 }}>
           <Paper elevation={2} style={{ padding: 16, textAlign: 'center' }}>
           <ScheduleGrid key={index} viewMode={viewMode} day={day} />
           </Paper>

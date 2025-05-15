@@ -25,7 +25,7 @@ const ScheduleGrid = ({ viewMode, day }) => {
   };
 
   const handleSaveEvent = (event) => {
-    const newEvent = { ...event, id: Date.now() };
+    const newEvent = {  ...event, id: Date.now(), day };
     setEvents([...events, newEvent]);
   };
 
