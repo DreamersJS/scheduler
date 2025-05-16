@@ -64,6 +64,9 @@ const ScheduleGrid = ({ viewMode, day }) => {
               style={{ backgroundColor: event ? event.color : "white" }}
             >
               {slot}
+              {event && (
+                <div className="text-sm text-gray-700 mt-1">{event.eventInfo}</div>
+              )}
             </div>
           );
         })}
@@ -91,6 +94,7 @@ const ScheduleGrid = ({ viewMode, day }) => {
               handleSaveEvent={handleSaveEvent}
               handleChangeColor={handleChangeColor}
               existingEvent={selectedEvent}
+              handleClose={handleCloseModal}
             />
           )}
         </Box>

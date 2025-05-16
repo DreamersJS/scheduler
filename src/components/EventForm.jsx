@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeColor, existingEvent }) => {
+const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeColor, existingEvent, handleClose, }) => {
   const [event, setEvent] = useState({
     date: selectedDate.toLocaleDateString(),
     slot: selectedSlot,
@@ -15,8 +15,21 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
   useEffect(() => {
     if (existingEvent) {
       setEvent(existingEvent);
+    } else if (selectedSlot) {
+      const [start, end] = selectedSlot.split(' - ');
+      setEvent((prev) => ({
+        ...prev,
+        startTime: to24Hour(start),
+        endTime: to24Hour(end),
+      }));
     }
-  }, [existingEvent]);
+  }, [existingEvent, selectedSlot]);
+
+  const to24Hour = (timeStr) => {
+    // Convert "3:30" to "03:30", if needed
+    const [hour, min] = timeStr.split(':');
+    return `${hour.padStart(2, '0')}:${min}`;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +94,7 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
           required
         />
       </div>
-{/* Event Type - may even delete it later */}
+      {/* Event Type - may even delete it later */}
       <div>
         <label htmlFor="eventType">Event Type:</label>
         <select
@@ -135,9 +148,13 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
         />
       </div>
 
-      <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
         <button type="submit">Save Event</button>
+        <button type="button" onClick={handleClose} style={{ marginLeft: '1rem' }}>
+          Cancel
+        </button>
       </div>
+
     </form>
   );
 };
