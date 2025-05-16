@@ -81,7 +81,7 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
           required
         />
       </div>
-
+{/* Event Type - may even delete it later */}
       <div>
         <label htmlFor="eventType">Event Type:</label>
         <select

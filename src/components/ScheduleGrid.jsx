@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import EventForm from "./EventForm";
+import { Modal, Box } from "@mui/material";
 
 const generateTimeSlots = (viewMode) => {
   const slots = [];
@@ -16,21 +17,33 @@ const generateTimeSlots = (viewMode) => {
 const ScheduleGrid = ({ viewMode, day }) => {
   const timeSlots = generateTimeSlots(viewMode);
   const [events, setEvents] = useState([]);
-  const [edit, setEdit] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const handleEdit = (slot) => {
-    setSelectedSlot({ day, slot });
-    setEdit(!edit);
+  const handleOpenModal = (slot) => {
+    const event = events.find(
+      (e) => e.day?.getTime?.() === day.getTime() && e.slot === slot
+    );
+    setSelectedSlot(slot);
+    setSelectedEvent(event || null);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedSlot(null);
+    setSelectedEvent(null);
   };
 
   const handleSaveEvent = (event) => {
-    const newEvent = {  ...event, id: Date.now(), day };
+    const newEvent = { ...event, id: Date.now(), day };
     setEvents([...events, newEvent]);
+    handleCloseModal();
   };
 
   const handleChangeColor = (eventId, color) => {
-    setEvents(events.map(event => 
+    setEvents(events.map((event) =>
       event.id === eventId ? { ...event, color } : event
     ));
   };
@@ -38,34 +51,53 @@ const ScheduleGrid = ({ viewMode, day }) => {
   return (
     <div className="p-2 bg-white w-full md:w-1/7">
       <h2 className="text-center">
-        {day.toLocaleDateString()} ({day.toLocaleString('en-US', { weekday: 'long' })})
+        {day.toLocaleDateString()} ({day.toLocaleString("en-US", { weekday: "long" })})
       </h2>
       <div className="mt-2">
         {timeSlots.map((slot, index) => {
-          const event = events.find(e => e.day.getTime() === day.getTime() && e.slot === slot);
+          const event = events.find(e => e.day?.getTime?.() === day.getTime() && e.slot === slot);
           return (
             <div
               key={index}
               className="p-2 text-center cursor-pointer"
-              onClick={() => handleEdit(slot)}
-              style={{ backgroundColor: event ? event.color : 'white' }}
+              onClick={() => handleOpenModal(slot)}
+              style={{ backgroundColor: event ? event.color : "white" }}
             >
-              {edit && selectedSlot?.slot === slot && (
-                <EventForm 
-                  selectedDate={day}
-                  selectedSlot={slot}
-                  handleSaveEvent={handleSaveEvent}
-                  handleChangeColor={handleChangeColor}
-                  existingEvent={event}
-                />
-              )}
               {slot}
             </div>
           );
         })}
       </div>
+
+      {/* Modal for event form */}
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          {selectedSlot && (
+            <EventForm
+              selectedDate={day}
+              selectedSlot={selectedSlot}
+              handleSaveEvent={handleSaveEvent}
+              handleChangeColor={handleChangeColor}
+              existingEvent={selectedEvent}
+            />
+          )}
+        </Box>
+      </Modal>
     </div>
   );
 };
 
 export default ScheduleGrid;
+
