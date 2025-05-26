@@ -7,27 +7,32 @@ import { Grid } from '@mui/system';
 
 function App() {
   const [viewMode, setViewMode] = useState("12H");
+  const [weekOffset, setWeekOffset] = useState(0);
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  const getDaysOfWeek = (date) => {
-    const startOfWeek = date.getDate() - date.getDay();
-    return Array.from({ length: 7 }, (_, i) =>
-      new Date(date.getFullYear(), date.getMonth(), startOfWeek + i)
-    );
+  const getStartOfWeek = (date) => {
+    const start = new Date(date);
+    start.setDate(date.getDate() - date.getDay());
+    return start;
   };
-
-  const daysOfWeek = getDaysOfWeek(currentDate);
-
-  const nextWeek = () => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 7)));
-  const prevWeek = () => setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)));
-
+  
+  const startOfWeek = getStartOfWeek(new Date(new Date().setDate(new Date().getDate() + weekOffset * 7)));
+  
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
+    const day = new Date(startOfWeek);
+    day.setDate(startOfWeek.getDate() + i);
+    return day;
+  });
+  
 
   return (
     <div className="min-h-screen p-4">
       <ToggleView viewMode={viewMode} setViewMode={setViewMode} />
-      <button onClick={prevWeek}>Previous Week</button>
-      <button onClick={nextWeek}>Next Week</button>
+      <div className="flex justify-center mb-4 gap-2">
+  <button onClick={() => setWeekOffset(weekOffset - 1)}>← Prev Week</button>
+  <button onClick={() => setWeekOffset(0)}>Today</button>
+  <button onClick={() => setWeekOffset(weekOffset + 1)}>Next Week →</button>
+</div>
+
 
       <div className="w-full" >
         <Grid container columns={7} spacing={2}>

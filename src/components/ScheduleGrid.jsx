@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import EventForm from "./EventForm";
 import { Modal, Box } from "@mui/material";
 
+export const isSlotWithinEvent = (slot, event) => {
+  const [slotStart, slotEnd] = slot.split(' - ').map(s => s.trim());
+
+  // Ensure the event has valid time info
+  if (!event.startTime || !event.endTime) return false;
+
+  return (
+    slotEnd > event.startTime && slotStart < event.endTime
+  );
+};
+
 const generateTimeSlots = (viewMode) => {
   const slots = [];
   const start = viewMode === "12H" ? 7 : 0;
@@ -22,9 +33,18 @@ const ScheduleGrid = ({ viewMode, day }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const handleOpenModal = (slot) => {
-    const event = events.find(
-      (e) => e.day?.getTime?.() === day.getTime() && e.slot === slot
-    );
+    const event = events.find(e => {
+      if (e.day.getTime() !== day.getTime()) return false;
+    
+      const [slotStartStr, slotEndStr] = slot.split(' - ').map(s => s.trim());
+      const eventStart = e.startTime;
+      const eventEnd = e.endTime;
+    
+      return (
+        slotStartStr >= eventStart && slotStartStr < eventEnd
+      );
+    });
+    
     setSelectedSlot(slot);
     setSelectedEvent(event || null);
     setModalOpen(true);
@@ -50,9 +70,10 @@ const ScheduleGrid = ({ viewMode, day }) => {
 
   return (
     <div className="p-2 bg-white w-full md:w-1/7">
-      <h2 className="text-center">
-        {day.toLocaleDateString()} ({day.toLocaleString("en-US", { weekday: "long" })})
-      </h2>
+      <h2 className="text-center font-semibold text-sm">
+  {day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+</h2>
+
       <div className="mt-2">
         {timeSlots.map((slot, index) => {
           const event = events.find(e => e.day?.getTime?.() === day.getTime() && e.slot === slot);

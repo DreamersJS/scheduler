@@ -19,6 +19,7 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
       const [start, end] = selectedSlot.split(' - ');
       setEvent((prev) => ({
         ...prev,
+        date: selectedDate.toISOString().split("T")[0], // YYYY-MM-DD format
         startTime: to24Hour(start),
         endTime: to24Hour(end),
       }));
