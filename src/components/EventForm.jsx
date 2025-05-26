@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { to24Hour } from "../service/utils";
 
 const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeColor, existingEvent, handleClose, }) => {
   const [event, setEvent] = useState({
@@ -25,12 +26,6 @@ const EventForm = ({ selectedDate, selectedSlot, handleSaveEvent, handleChangeCo
       }));
     }
   }, [existingEvent, selectedSlot]);
-
-  const to24Hour = (timeStr) => {
-    // Convert "3:30" to "03:30", if needed
-    const [hour, min] = timeStr.split(':');
-    return `${hour.padStart(2, '0')}:${min}`;
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
